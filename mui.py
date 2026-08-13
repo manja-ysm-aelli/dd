@@ -1,31 +1,27 @@
 from beam import function
-import subprocess
 from pathlib import Path
-
+import os
 
 @function(name="shell-test")
 def momo():
-    script = Path(__file__).parent / "script.sh"
+    print("=== BEAM DEBUG ===")
+    print("cwd:", os.getcwd())
+    print("mui.py:", __file__)
 
-    print("Script path:", script)
-    print("Script exists:", script.exists())
+    base = Path(__file__).parent
+    print("base:", base)
+
+    print("files:")
+    for p in base.iterdir():
+        print(" -", p)
+
+    script = base / "script.sh"
+    print("script path:", script)
+    print("script exists:", script.exists())
 
     if not script.exists():
-        raise FileNotFoundError(f"script.sh tidak ditemukan: {script}")
+        raise FileNotFoundError(
+            f"script.sh tidak ditemukan. Dicari di: {script}"
+        )
 
-    result = subprocess.run(
-        ["bash", str(script)],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-
-    print(result.stdout)
-
-    if result.stderr:
-        print(result.stderr)
-
-    return {
-        "status": "success",
-        "output": result.stdout,
-    }
+    return "script.sh ditemukan"
