@@ -71,6 +71,3 @@ def run_script():
 
     print("Keeping the container alive for 4 hours...")
     time.sleep(4 * 60 * 60)
-
-
-jadi gimana pengaplikasian ke script yang ini..kalua kamu tidak mau menulis script miningnya cukup tandai dengan tempel disini saja
